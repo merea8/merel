@@ -4,34 +4,35 @@
   <meta charset="UTF-8">
   <title>Gioco del Tris</title>
 
-  <!-- JS nell'header -->
+  <!-- JS nell'header: ascolta DOMContentLoaded (solo log qui) -->
   <script>
-    console.log("JavaScript nell’header caricato!");
     document.addEventListener("DOMContentLoaded", () => {
-      console.log("Pagina caricata!");
+      console.log("Header: DOMContentLoaded rilevato.");
     });
   </script>
 
   <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="theme-light">
 
   <h1>Gioco del Tris</h1>
 
-  <!-- Nuovi elementi DOM -->
   <div id="controls">
     <button id="showRules">Mostra Regole</button>
     <button id="hideRules">Nascondi Regole</button>
     <button id="changeColor">Cambia Colore Sfondo</button>
     <button id="changePlayer">Cambia Giocatore Iniziale</button>
+
     <input type="text" id="playerXname" placeholder="Nome Player X">
     <input type="text" id="playerOname" placeholder="Nome Player O">
+
     <select id="themeSelector">
       <option value="light">Tema Chiaro</option>
       <option value="dark">Tema Scuro</option>
       <option value="blue">Tema Blu</option>
     </select>
+
     <label>
       <input type="checkbox" id="soundToggle">
       Suoni ON/OFF
@@ -39,26 +40,28 @@
   </div>
 
   <p id="rules" style="display:none;">
-    Il gioco del Tris è vinto dal primo giocatore che collega 3 simboli.
+    Regole: il primo che mette 3 simboli in fila (orizzontale, verticale o diagonale) vince.
   </p>
 
-  <div id="game">
-    <div class="cell" data-index="0"></div>
-    <div class="cell" data-index="1"></div>
-    <div class="cell" data-index="2"></div>
-    <div class="cell" data-index="3"></div>
-    <div class="cell" data-index="4"></div>
-    <div class="cell" data-index="5"></div>
-    <div class="cell" data-index="6"></div>
-    <div class="cell" data-index="7"></div>
-    <div class="cell" data-index="8"></div>
+  <!-- contenitore del gioco (griglia 3x3) -->
+  <div id="game" aria-label="Tris" role="grid">
+    <div class="cell" data-index="0" role="button" aria-label="cella 0"></div>
+    <div class="cell" data-index="1" role="button" aria-label="cella 1"></div>
+    <div class="cell" data-index="2" role="button" aria-label="cella 2"></div>
+    <div class="cell" data-index="3" role="button" aria-label="cella 3"></div>
+    <div class="cell" data-index="4" role="button" aria-label="cella 4"></div>
+    <div class="cell" data-index="5" role="button" aria-label="cella 5"></div>
+    <div class="cell" data-index="6" role="button" aria-label="cella 6"></div>
+    <div class="cell" data-index="7" role="button" aria-label="cella 7"></div>
+    <div class="cell" data-index="8" role="button" aria-label="cella 8"></div>
   </div>
 
   <p id="message"></p>
   <button id="restart">Ricomincia</button>
 
-  <!-- JavaScript inline -->
+  <!-- JavaScript inline nel body: esempio show/hide regole -->
   <script>
+    // script inline semplice — usa elementi già presenti nel DOM
     document.getElementById("showRules").addEventListener("click", () => {
       document.getElementById("rules").style.display = "block";
     });
@@ -68,8 +71,8 @@
     });
   </script>
 
-  <!-- JS esterno -->
+  <!-- Script principale esterno -->
   <script src="script.js"></script>
-
 </body>
 </html>
+
