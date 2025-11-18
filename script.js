@@ -1,78 +1,141 @@
-:root {
-  --bg: #f4f4f4; /* variabile per background, modificabile da JS */
-  --cell-bg: #fff;
-  --cell-border: #333;
-  --text-color: #111;
-}
+// script.js - principale
+document.addEventListener("DOMContentLoaded", () => {
+  // selezioni
+  const cells = Array.from(document.querySelectorAll('.cell'));
+  const message = document.getElementById('message');
+  const restartBtn = document.getElementById('restart');
+  const changeColorBtn = document.getElementById('changeColor');
+  const changePlayerBtn = document.getElementById('changePlayer');
+  const themeSelector = document.getElementById('themeSelector');
+  const soundToggle = document.getElementById('soundToggle');
+  const playerXname = document.getElementById('playerXname');
+  const playerOname = document.getElementById('playerOname');
 
-/* temi */
-body.theme-light {
-  background-color: var(--bg);
-  color: var(--text-color);
-}
+  let currentPlayer = 'X';
+  let board = Array(9).fill(null);
+  let gameActive = true;
 
-body.theme-dark {
-  background-color: #222;
-  color: #eee;
-}
+  // inizializza messaggio
+  message.textContent = `Turno di ${currentPlayer}`;
 
-body.theme-blue {
-  background-color: #cce0ff;
-  color: #03396c;
-}
+  // ==========================
+  // Funzioni di gioco
+  // ==========================
+  function getPlayerName(symbol) {
+    return symbol === 'X' ? (playerXname.value || 'X') : (playerOname.value || 'O');
+  }
 
-body {
-  font-family: sans-serif;
-  text-align: center;
-  margin: 0;
-  padding: 20px;
-  transition: background-color 250ms ease, color 250ms ease;
-}
+  function checkWin() {
+    const winningCombos = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+    return winningCombos.some(combo => {
+      const [a,b,c] = combo;
+      return board[a] && board[a] === board[b] && board[a] === board[c];
+    });
+  }
 
-/* controlli */
-#controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  margin-bottom: 10px;
-}
+  function handleClick(e) {
+    const index = Number(e.currentTarget.dataset.index);
+    if (!gameActive || board[index]) return;
 
-/* griglia tris */
-#game {
-  display: grid;
-  grid-template-columns: repeat(3, 100px);
-  gap: 8px;
-  justify-content: center;
-  margin: 20px auto;
-}
+    // aggiorna stato
+    board[index] = currentPlayer;
+    e.currentTarget.textContent = currentPlayer;
+    e.currentTarget.classList.add('taken');
 
-.cell {
-  width: 100px;
-  height: 100px;
-  background-color: var(--cell-bg);
-  border: 2px solid var(--cell-border);
-  font-size: 2.4em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-  transition: background-color 150ms ease, transform 120ms ease;
-}
+    // controlla vittoria / pareggio
+    if (checkWin()) {
+      message.textContent = `${getPlayerName(currentPlayer)} ha vinto!`;
+      gameActive = false;
+      highlightWinningCombo();
+    } else if (!board.includes(null)) {
+      message.textContent = 'Pareggio!';
+      gameActive = false;
+    } else {
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      message.textContent = `Turno di ${getPlayerName(currentPlayer)}`;
+    }
+  }
 
-.cell:hover {
-  transform: translateY(-3px);
-}
+  function restartGame() {
+    board = Array(9).fill(null);
+    currentPlayer = 'X';
+    gameActive = true;
+    message.textContent = `Turno di ${getPlayerName(currentPlayer)}`;
+    cells.forEach(cell => {
+      cell.textContent = '';
+      cell.classList.remove('taken', 'win');
+    });
+  }
 
-.cell.taken {
-  pointer-events: none;
-  opacity: 0.9;
-}
+  // evidenzia combo vincente (se vuoi)
+  function highlightWinningCombo() {
+    const combos = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+    combos.forEach(combo => {
+      const [a,b,c] = combo;
+      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+        cells[a].classList.add('win');
+        cells[b].classList.add('win');
+        cells[c].classList.add('win');
+      }
+    });
+  }
 
-/* messaggio */
-#message {
-  margin-top: 10px;
-  font-weight: bold;
-  min-height: 1.4em;
-}
+  // ==========================
+  // Event listeners (10+)
+  // ==========================
+  // 1-9: click sulle 9 celle
+  cells.forEach(cell => cell.addEventListener('click', handleClick));
+
+  // 10: restart
+  restartBtn.addEventListener('click', restartGame);
+
+  // 11: cambia colore sfondo (usa variabile CSS)
+  changeColorBtn.addEventListener('click', () => {
+    const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
+    document.documentElement.style.setProperty('--bg', randomColor);
+  });
+
+  // 12: cambia giocatore iniziale
+  changePlayerBtn.addEventListener('click', () => {
+    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    message.textContent = `Ora inizia ${getPlayerName(currentPlayer)}`;
+  });
+
+  // 13: cambio tema (applica classe al body)
+  themeSelector.addEventListener('change', () => {
+    const t = themeSelector.value;
+    document.body.classList.remove('theme-light','theme-dark','theme-blue');
+    if (t === 'dark') document.body.classList.add('theme-dark');
+    else if (t === 'blue') document.body.classList.add('theme-blue');
+    else document.body.classList.add('theme-light');
+  });
+
+  // 14: toggle suoni (esempio)
+  soundToggle.addEventListener('change', () => {
+    console.log('Suoni:', soundToggle.checked ? 'ON' : 'OFF');
+  });
+
+  // 15-16: input nomi giocatori
+  playerXname.addEventListener('input', () => {
+    message.textContent = `Turno di ${getPlayerName(currentPlayer)}`;
+  });
+  playerOname.addEventListener('input', () => {
+    message.textContent = `Turno di ${getPlayerName(currentPlayer)}`;
+  });
+
+  // (opzionale) 17: supporto tastiera per navigare / inserire (esempio)
+  document.addEventListener('keydown', (ev) => {
+    if (!gameActive) return;
+    // se premi 'r' ricomincia
+    if (ev.key === 'r' || ev.key === 'R') restartGame();
+  });
+});
+
