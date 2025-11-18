@@ -1,108 +1,78 @@
-const cells = document.querySelectorAll('.cell');
-const message = document.getElementById('message');
-const restartBtn = document.getElementById('restart');
-const changeColorBtn = document.getElementById('changeColor');
-const changePlayerBtn = document.getElementById('changePlayer');
-const themeSelector = document.getElementById('themeSelector');
-const soundToggle = document.getElementById('soundToggle');
-const playerXname = document.getElementById('playerXname');
-const playerOname = document.getElementById('playerOname');
-
-let currentPlayer = 'X';
-let board = Array(9).fill(null);
-let gameActive = true;
-
-// EVENTO 1–9: click su ogni cella
-cells.forEach(cell => cell.addEventListener('click', handleClick));
-
-// EVENTO 10: restart
-restartBtn.addEventListener('click', restartGame);
-
-// EVENTO 11: cambio colore sfondo
-changeColorBtn.addEventListener('click', () => {
-  document.body.style.backgroundColor =
-    '#' + Math.floor(Math.random() * 16777215).toString(16);
-});
-
-// EVENTO 12: cambio giocatore iniziale
-changePlayerBtn.addEventListener('click', () => {
-  currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-  message.textContent = `Ora inizia ${currentPlayer}`;
-});
-
-// EVENTO 13: cambio tema
-themeSelector.addEventListener('change', () => {
-  const theme = themeSelector.value;
-  if (theme === "dark") document.body.style.filter = "invert(1)";
-  else if (theme === "blue") document.body.style.backgroundColor = "#cce0ff";
-  else document.body.style.filter = "invert(0)";
-});
-
-// EVENTO 14: ON/OFF suoni
-soundToggle.addEventListener('change', () => {
-  console.log(soundToggle.checked ? "Suoni attivi" : "Suoni disattivati");
-});
-
-// EVENTO 15 e 16: input giocatori
-playerXname.addEventListener('input', () => {
-  console.log("Player X:", playerXname.value);
-});
-
-playerOname.addEventListener('input', () => {
-  console.log("Player O:", playerOname.value);
-});
-
-
-// -------------------
-// Funzioni di gioco
-// -------------------
-
-function checkWin() {
-  const winningCombos = [
-    [0,1,2],[3,4,5],[6,7,8],
-    [0,3,6],[1,4,7],[2,5,8],
-    [0,4,8],[2,4,6]
-  ];
-  return winningCombos.some(combo => {
-    const [a,b,c] = combo;
-    return board[a] && board[a] === board[b] && board[a] === board[c];
-  });
+:root {
+  --bg: #f4f4f4; /* variabile per background, modificabile da JS */
+  --cell-bg: #fff;
+  --cell-border: #333;
+  --text-color: #111;
 }
 
-function handleClick(e) {
-  const index = e.target.dataset.index;
-  if (!gameActive || board[index]) return;
-
-  board[index] = currentPlayer;
-  e.target.textContent = currentPlayer;
-  e.target.classList.add('taken');
-
-  if (checkWin()) {
-    message.textContent = `${getPlayerName(currentPlayer)} ha vinto!`;
-    gameActive = false;
-  } else if (!board.includes(null)) {
-    message.textContent = "Pareggio!";
-    gameActive = false;
-  } else {
-    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-    message.textContent = `Turno di ${getPlayerName(currentPlayer)}`;
-  }
+/* temi */
+body.theme-light {
+  background-color: var(--bg);
+  color: var(--text-color);
 }
 
-function restartGame() {
-  board = Array(9).fill(null);
-  currentPlayer = 'X';
-  gameActive = true;
-  message.textContent = "";
-  cells.forEach(cell => {
-    cell.textContent = "";
-    cell.classList.remove('taken');
-  });
+body.theme-dark {
+  background-color: #222;
+  color: #eee;
 }
 
-function getPlayerName(symbol) {
-  return symbol === 'X'
-    ? (playerXname.value || "X")
-    : (playerOname.value || "O");
+body.theme-blue {
+  background-color: #cce0ff;
+  color: #03396c;
 }
-k', restartGame);
+
+body {
+  font-family: sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+  transition: background-color 250ms ease, color 250ms ease;
+}
+
+/* controlli */
+#controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+/* griglia tris */
+#game {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  gap: 8px;
+  justify-content: center;
+  margin: 20px auto;
+}
+
+.cell {
+  width: 100px;
+  height: 100px;
+  background-color: var(--cell-bg);
+  border: 2px solid var(--cell-border);
+  font-size: 2.4em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 150ms ease, transform 120ms ease;
+}
+
+.cell:hover {
+  transform: translateY(-3px);
+}
+
+.cell.taken {
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+/* messaggio */
+#message {
+  margin-top: 10px;
+  font-weight: bold;
+  min-height: 1.4em;
+}
