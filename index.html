@@ -3,10 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <title>Gioco del Tris</title>
+
+  <!-- JS nell'header -->
+  <script>
+    console.log("JavaScript nell’header caricato!");
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("Pagina caricata!");
+    });
+  </script>
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
   <h1>Gioco del Tris</h1>
+
+  <!-- Nuovi elementi DOM -->
+  <div id="controls">
+    <button id="showRules">Mostra Regole</button>
+    <button id="hideRules">Nascondi Regole</button>
+    <button id="changeColor">Cambia Colore Sfondo</button>
+    <button id="changePlayer">Cambia Giocatore Iniziale</button>
+    <input type="text" id="playerXname" placeholder="Nome Player X">
+    <input type="text" id="playerOname" placeholder="Nome Player O">
+    <select id="themeSelector">
+      <option value="light">Tema Chiaro</option>
+      <option value="dark">Tema Scuro</option>
+      <option value="blue">Tema Blu</option>
+    </select>
+    <label>
+      <input type="checkbox" id="soundToggle">
+      Suoni ON/OFF
+    </label>
+  </div>
+
+  <p id="rules" style="display:none;">
+    Il gioco del Tris è vinto dal primo giocatore che collega 3 simboli.
+  </p>
+
   <div id="game">
     <div class="cell" data-index="0"></div>
     <div class="cell" data-index="1"></div>
@@ -18,9 +53,23 @@
     <div class="cell" data-index="7"></div>
     <div class="cell" data-index="8"></div>
   </div>
+
   <p id="message"></p>
   <button id="restart">Ricomincia</button>
 
+  <!-- JavaScript inline -->
+  <script>
+    document.getElementById("showRules").addEventListener("click", () => {
+      document.getElementById("rules").style.display = "block";
+    });
+
+    document.getElementById("hideRules").addEventListener("click", () => {
+      document.getElementById("rules").style.display = "none";
+    });
+  </script>
+
+  <!-- JS esterno -->
   <script src="script.js"></script>
+
 </body>
 </html>
