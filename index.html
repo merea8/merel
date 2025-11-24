@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8"> <!-- Imposta la codifica caratteri -->
-  <title>Gioco del Tris</title> <!-- Titolo della pagina -->
-  <link rel="stylesheet" href="style.css"> <!-- Collegamento al file CSS -->
+  <meta charset="UTF-8">
+  <title>Gioco del Tris</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Gioco del Tris</h1> <!-- Titolo principale della pagina -->
-
-  <!-- Contenitore della griglia del gioco (3x3) -->
+  <h1>Gioco del Tris</h1>
   <div id="game">
-    <!-- Ogni div rappresenta una cella del tris e ha un indice univoco -->
     <div class="cell" data-index="0"></div>
     <div class="cell" data-index="1"></div>
     <div class="cell" data-index="2"></div>
@@ -21,17 +18,9 @@
     <div class="cell" data-index="7"></div>
     <div class="cell" data-index="8"></div>
   </div>
-
-  <!-- Paragrafo per visualizzare il messaggio (vittoria, pareggio, turno) -->
   <p id="message"></p>
-
-  <!-- Bottone per ricominciare la partita -->
   <button id="restart">Ricomincia</button>
 
-  <!-- File JavaScript esterno -->
   <script src="script.js"></script>
 </body>
 </html>
-
-</html>
-
