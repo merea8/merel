@@ -1,141 +1,114 @@
-// script.js - principale
-document.addEventListener("DOMContentLoaded", () => {
-  // selezioni
-  const cells = Array.from(document.querySelectorAll('.cell'));
-  const message = document.getElementById('message');
-  const restartBtn = document.getElementById('restart');
-  const changeColorBtn = document.getElementById('changeColor');
-  const changePlayerBtn = document.getElementById('changePlayer');
-  const themeSelector = document.getElementById('themeSelector');
-  const soundToggle = document.getElementById('soundToggle');
-  const playerXname = document.getElementById('playerXname');
-  const playerOname = document.getElementById('playerOname');
+// Seleziona tutte le celle della griglia
+const cells = document.querySelectorAll('.cell');
 
-  let currentPlayer = 'X';
-  let board = Array(9).fill(null);
-  let gameActive = true;
+// Seleziona l'elemento che mostra i messaggi
+const message = document.getElementById('message');
 
-  // inizializza messaggio
-  message.textContent = `Turno di ${currentPlayer}`;
+// Seleziona il pulsante "Ricomincia"
+const restartBtn = document.getElementById('restart');
 
-  // ==========================
-  // Funzioni di gioco
-  // ==========================
-  function getPlayerName(symbol) {
-    return symbol === 'X' ? (playerXname.value || 'X') : (playerOname.value || 'O');
-  }
+// Giocatore corrente: inizia sempre "X"
+let currentPlayer = 'X';
 
-  function checkWin() {
-    const winningCombos = [
-      [0,1,2],[3,4,5],[6,7,8],
-      [0,3,6],[1,4,7],[2,5,8],
-      [0,4,8],[2,4,6]
-    ];
-    return winningCombos.some(combo => {
-      const [a,b,c] = combo;
-      return board[a] && board[a] === board[b] && board[a] === board[c];
-    });
-  }
+// Array che rappresenta lo stato del tabellone (9 caselle)
+let board = Array(9).fill(null);
 
-  function handleClick(e) {
-    const index = Number(e.currentTarget.dataset.index);
-    if (!gameActive || board[index]) return;
+// Variabile che indica se la partita è ancora in corso
+let gameActive = true;
 
-    // aggiorna stato
-    board[index] = currentPlayer;
-    e.currentTarget.textContent = currentPlayer;
-    e.currentTarget.classList.add('taken');
 
-    // controlla vittoria / pareggio
-    if (checkWin()) {
-      message.textContent = `${getPlayerName(currentPlayer)} ha vinto!`;
-      gameActive = false;
-      highlightWinningCombo();
-    } else if (!board.includes(null)) {
-      message.textContent = 'Pareggio!';
-      gameActive = false;
-    } else {
-      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-      message.textContent = `Turno di ${getPlayerName(currentPlayer)}`;
-    }
-  }
+// ----------------------------
+// FUNZIONE: Controlla la vittoria
+// ----------------------------
+function checkWin() {
 
-  function restartGame() {
-    board = Array(9).fill(null);
-    currentPlayer = 'X';
-    gameActive = true;
-    message.textContent = `Turno di ${getPlayerName(currentPlayer)}`;
-    cells.forEach(cell => {
-      cell.textContent = '';
-      cell.classList.remove('taken', 'win');
-    });
-  }
+  // Tutte le combinazioni vincenti del tris
+  const winningCombos = [
+    [0,1,2], // riga 1
+    [3,4,5], // riga 2
+    [6,7,8], // riga 3
+    [0,3,6], // colonna 1
+    [1,4,7], // colonna 2
+    [2,5,8], // colonna 3
+    [0,4,8], // diagonale
+    [2,4,6]  // diagonale opposta
+  ];
 
-  // evidenzia combo vincente (se vuoi)
-  function highlightWinningCombo() {
-    const combos = [
-      [0,1,2],[3,4,5],[6,7,8],
-      [0,3,6],[1,4,7],[2,5,8],
-      [0,4,8],[2,4,6]
-    ];
-    combos.forEach(combo => {
-      const [a,b,c] = combo;
-      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-        cells[a].classList.add('win');
-        cells[b].classList.add('win');
-        cells[c].classList.add('win');
-      }
-    });
-  }
+  // Controlla se una combinazione è completa
+  return winningCombos.some(combo => {
+    const [a, b, c] = combo;
 
-  // ==========================
-  // Event listeners (10+)
-  // ==========================
-  // 1-9: click sulle 9 celle
-  cells.forEach(cell => cell.addEventListener('click', handleClick));
-
-  // 10: restart
-  restartBtn.addEventListener('click', restartGame);
-
-  // 11: cambia colore sfondo (usa variabile CSS)
-  changeColorBtn.addEventListener('click', () => {
-    const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0');
-    document.documentElement.style.setProperty('--bg', randomColor);
+    // Una combinazione è vincente se:
+    // - le tre celle NON sono vuote
+    // - hanno lo stesso simbolo
+    return board[a] && board[a] === board[b] && board[a] === board[c];
   });
+}
 
-  // 12: cambia giocatore iniziale
-  changePlayerBtn.addEventListener('click', () => {
+
+// ----------------------------
+// FUNZIONE: Gestisce il click su una cella
+// ----------------------------
+function handleClick(e) {
+
+  // Ottiene l'indice della cella cliccata
+  const index = e.target.dataset.index;
+
+  // Se la partita è finita o la cella è già occupata → ignora il click
+  if (!gameActive || board[index]) return;
+
+  // Inserisce il simbolo del giocatore corrente nella cella
+  board[index] = currentPlayer;
+  e.target.textContent = currentPlayer;
+
+  // Aggiunge una classe che evita ulteriori click
+  e.target.classList.add('taken');
+
+  // Controlla se questo movimento ha portato a una vittoria
+  if (checkWin()) {
+    message.textContent = `${currentPlayer} ha vinto!`; // Messaggio di vittoria
+    gameActive = false; // Ferma il gioco
+  }
+  // Se la griglia è piena e nessuno ha vinto → pareggio
+  else if (!board.includes(null)) {
+    message.textContent = 'Pareggio!';
+    gameActive = false;
+  }
+  // Altrimenti si cambia giocatore
+  else {
     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-    message.textContent = `Ora inizia ${getPlayerName(currentPlayer)}`;
-  });
+    message.textContent = `Turno di ${currentPlayer}`;
+  }
+}
 
-  // 13: cambio tema (applica classe al body)
-  themeSelector.addEventListener('change', () => {
-    const t = themeSelector.value;
-    document.body.classList.remove('theme-light','theme-dark','theme-blue');
-    if (t === 'dark') document.body.classList.add('theme-dark');
-    else if (t === 'blue') document.body.classList.add('theme-blue');
-    else document.body.classList.add('theme-light');
-  });
 
-  // 14: toggle suoni (esempio)
-  soundToggle.addEventListener('change', () => {
-    console.log('Suoni:', soundToggle.checked ? 'ON' : 'OFF');
-  });
+// ----------------------------
+// FUNZIONE: Ricomincia la partita
+// ----------------------------
+function restartGame() {
 
-  // 15-16: input nomi giocatori
-  playerXname.addEventListener('input', () => {
-    message.textContent = `Turno di ${getPlayerName(currentPlayer)}`;
-  });
-  playerOname.addEventListener('input', () => {
-    message.textContent = `Turno di ${getPlayerName(currentPlayer)}`;
-  });
+  // Reset delle variabili
+  board = Array(9).fill(null);
+  gameActive = true;
+  currentPlayer = 'X';
 
-  // (opzionale) 17: supporto tastiera per navigare / inserire (esempio)
-  document.addEventListener('keydown', (ev) => {
-    if (!gameActive) return;
-    // se premi 'r' ricomincia
-    if (ev.key === 'r' || ev.key === 'R') restartGame();
-  });
-});
+  // Cancella messaggio
+  message.textContent = '';
 
+  // Cancella simboli nelle celle
+  cells.forEach(cell => {
+    cell.textContent = '';
+    cell.classList.remove('taken'); // La cella torna cliccabile
+  });
+}
+
+
+// ----------------------------
+// AGGIUNTA EVENTI
+// ----------------------------
+
+// Per ogni cella: aggiunge un evento click che esegue handleClick()
+cells.forEach(cell => cell.addEventListener('click', handleClick));
+
+// Aggiunge evento al pulsante "Ricomincia"
+restartBtn.addEventListener('click', restartGame);
