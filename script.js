@@ -16,10 +16,7 @@ let board = Array(9).fill(null);
 // Variabile che indica se la partita è ancora in corso
 let gameActive = true;
 
-
-// ----------------------------
 // FUNZIONE: Controlla la vittoria
-// ----------------------------
 function checkWin() {
 
   // Tutte le combinazioni vincenti del tris
@@ -45,16 +42,13 @@ function checkWin() {
   });
 }
 
-
-// ----------------------------
 // FUNZIONE: Gestisce il click su una cella
-// ----------------------------
 function handleClick(e) {
 
   // Ottiene l'indice della cella cliccata
   const index = e.target.dataset.index;
 
-  // Se la partita è finita o la cella è già occupata → ignora il click
+  // Se la partita è finita o la cella è già occupata -> ignora il click
   if (!gameActive || board[index]) return;
 
   // Inserisce il simbolo del giocatore corrente nella cella
@@ -69,7 +63,7 @@ function handleClick(e) {
     message.textContent = `${currentPlayer} ha vinto!`; // Messaggio di vittoria
     gameActive = false; // Ferma il gioco
   }
-  // Se la griglia è piena e nessuno ha vinto → pareggio
+  // Se la griglia è piena e nessuno ha vinto -> pareggio
   else if (!board.includes(null)) {
     message.textContent = 'Pareggio!';
     gameActive = false;
@@ -81,10 +75,7 @@ function handleClick(e) {
   }
 }
 
-
-// ----------------------------
 // FUNZIONE: Ricomincia la partita
-// ----------------------------
 function restartGame() {
 
   // Reset delle variabili
@@ -102,12 +93,9 @@ function restartGame() {
   });
 }
 
-
-// ----------------------------
 // AGGIUNTA EVENTI
-// ----------------------------
 
-// Per ogni cella: aggiunge un evento click che esegue handleClick()
+// Per ogni cella: aggiunge un evento click che esegue handleClick
 cells.forEach(cell => cell.addEventListener('click', handleClick));
 
 // Aggiunge evento al pulsante "Ricomincia"
